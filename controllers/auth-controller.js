@@ -50,7 +50,7 @@ exports.login = async (req, res, next) => {
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: '30d'
     })
-    console.log(token)
+    // console.log(token)
     res.json({ token: token })
   } catch (err) {
     next(err)
@@ -76,13 +76,13 @@ exports.updateUser = async (req, res, next) => {
     if (newPassword || confirmPassword) {
       // ตรวจสอบว่ารหัสผ่านใหม่และรหัสผ่านที่ยืนยันตรงกันหรือไม่
       if (newPassword !== confirmPassword) {
-        throw new Error("Confirm password does not match");
+        throw new Error("รหัสผ่านไม่ตรงกัน");
       }
 
       // ตรวจสอบว่ารหัสผ่านเก่าถูกต้องหรือไม่
       const pwOk = await bcrypt.compare(oldPassword, user.password);
       if (!pwOk) {
-        throw new Error("Invalid old password");
+        throw new Error("รหัสผ่านไม่ถูกต้อง");
       }
 
       // แปลงรหัสผ่านใหม่เป็น bcrypt hash
@@ -99,7 +99,7 @@ exports.updateUser = async (req, res, next) => {
       where: { id: +id },
     });
 
-    res.json({ msg: "Update ok", result: rs });
+    res.status(200).json({ msg: "Update ok", result: rs });
   } catch (err) {
     next(err);
   }
@@ -135,8 +135,8 @@ exports.order = async (req, res, next) => {
     const { user_gameId, point_id, gameId, email } = req.body;
 
     // Validation
-    if (!(user_gameId && point_id && gameId && email)) {
-      return next(new Error("Please provide all required fields"));
+    if (!(user_gameId && point_id && gameId )) {
+      return next(new Error("กรุณากรอกข้อมูลให้ครบถ้วน"));
     }
 
     const order = await db.order.create({

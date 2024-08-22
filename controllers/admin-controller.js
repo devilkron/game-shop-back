@@ -1,35 +1,38 @@
-const db = require("../models/db")
+const db = require("../models/db");
 require("dotenv").config();
+
 exports.getUser = async (req, res, next) => {
   try {
     const user = await db.user.findMany();
     res.json({ user });
-    next()
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
 exports.protype = async (req, res, next) => {
-  const { name } = req.body
-  const data = { gametype_name: name }
+  const { name } = req.body;
+  const data = { gametype_name: name };
   try {
-    const rs = await db.TypeGames.create({
-      data: data
-      // data: {...data, userId: req.user.id}
-    })
-    res.json({ msg: 'Create Ok', result: rs })
-    // res.json(rs)
+    if (req.body === "") {
+      res.json({ msg: "กรุณากรอกประเภทเกมส์" });
+    } else {
+      const rs = await db.TypeGames.create({
+        data: data,
+        // data: {...data, userId: req.user.id}
+      });
+      res.json({ msg: "Create Ok", result: rs });
+      // res.json(rs)
+    }
   } catch (err) {
-    next(err)
-
+    next(err);
   }
-}
+};
 
 exports.createproduct = async (req, res, next) => {
   try {
     const { name, img } = req.body;
-    console.log(req.body)
+    console.log(req.body);
     // Validation
     // if (!(name && price && unit && decription && url && productType_id)) {
     //   return next(new Error("Please provide all required fields"));
@@ -38,20 +41,19 @@ exports.createproduct = async (req, res, next) => {
     // if (!(name && price && point && img && gametypeId)) {
     //   return res.status(400).json({ error: "Please provide all required fields" });
     // }
-    const { gametypeId } = req.body
+    const { gametypeId } = req.body;
     const product = await db.games.create({
       data: {
         game_name: name,
         img,
         // gametypeId:Number(gametypeId)
         gametype_name: {
-          connect: { id: Number(gametypeId) }
-
-        }
-      }
+          connect: { id: Number(gametypeId) },
+        },
+      },
     });
 
-    res.json({ msg: 'Product created successfully', product });
+    res.json({ msg: "Product created successfully", product });
   } catch (error) {
     next(error);
   }
@@ -61,19 +63,19 @@ exports.getProList = async (req, res, next) => {
   try {
     const getP = await db.games.findMany({
       include: {
-        gametype_name: true
-      }
-    })
-    res.json({ getP })
+        gametype_name: true,
+      },
+    });
+    res.json({ getP });
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
 exports.createPoint = async (req, res, next) => {
   try {
     const { price, point } = req.body;
-    console.log(req.body)
+    console.log(req.body);
     // Validation
     // if (!(name && price && unit && decription && url && productType_id)) {
     //   return next(new Error("Please provide all required fields"));
@@ -82,8 +84,7 @@ exports.createPoint = async (req, res, next) => {
     // if (!(name && price && point && img && gametypeId)) {
     //   return res.status(400).json({ error: "Please provide all required fields" });
     // }
-    const { gameId } = req.body
-
+    const { gameId } = req.body;
 
     const createPoint = await db.point.create({
       data: {
@@ -91,46 +92,40 @@ exports.createPoint = async (req, res, next) => {
         point: Number(point),
         // gametypeId:Number(gametypeId)
         game: {
-          connect: { id: Number(gameId) }
-
-        }
-      }
+          connect: { id: Number(gameId) },
+        },
+      },
     });
 
-    res.json({ msg: 'Point created successfully', createPoint });
+    res.json({ msg: "Point created successfully", createPoint });
   } catch (error) {
     next(error);
   }
 };
 
-
 exports.getType = async (req, res, next) => {
-  const getG = await db.typeGames.findMany()
-  res.json({ getG })
-
-
-}
+  const getG = await db.typeGames.findMany();
+  res.json({ getG });
+};
 exports.getGame = async (req, res, next) => {
-  const getGame = await db.games.findMany()
-  res.json({ getGame })
-
-
-}
+  const getGame = await db.games.findMany();
+  res.json({ getGame });
+};
 
 exports.deleteGame = async (req, res, next) => {
-  const { id } = req.params
+  const { id } = req.params;
   try {
-    const rs = await db.games.delete({ where: { id: +id } })
-    res.json({ msg: 'Delete Ok', result: rs })
+    const rs = await db.games.delete({ where: { id: +id } });
+    res.json({ msg: "Delete Ok", result: rs });
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 exports.deletetypegames = async (req, res, next) => {
-  const {id} = req.params
+  const { id } = req.params;
   try {
-    const rs = await db.typeGames.delete({where:{id: parseInt(id) } })
-    res.json({ msg: 'Delete OK', result: rs });
+    const rs = await db.typeGames.delete({ where: { id: parseInt(id) } });
+    res.json({ msg: "Delete OK", result: rs });
   } catch (err) {
     next(err);
   }
@@ -138,61 +133,55 @@ exports.deletetypegames = async (req, res, next) => {
 
 exports.updateProduct = async (req, res, next) => {
   // validate req.params + req.body
-  const { id } = req.params
-  const { game_name,
-    img,
-  }
-    = req.body
+  const { id } = req.params;
+  const { game_name, img } = req.body;
   try {
     const rs = await db.games.update({
       data: {
         game_name,
         img,
+        
       },
-      where: { id: Number(id) }
-    })
-    res.json({ msg: 'Update ok', result: rs })
+      where: { id: Number(id) },
+    });
+    res.json({ msg: "Update ok", result: rs });
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
 exports.updateType = async (req, res, next) => {
   // validate req.params + req.body
-  const { id } = req.params
-  const { gametype_name, } = req.body
+  const { id } = req.params;
+  const { gametype_name } = req.body;
   try {
     const rs = await db.typeGames.update({
       data: {
         gametype_name,
       },
-      where: { id: Number(id) }
-    })
-    res.json({ msg: 'Update ok', result: rs })
+      where: { id: Number(id) },
+    });
+    res.json({ msg: "Update ok", result: rs });
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
-
+};
 
 exports.typegames = async (req, res, next) => {
   try {
-    const typegames = await db.typeGames.findMany()
-    res.json({ typegames })
-
+    const typegames = await db.typeGames.findMany();
+    res.json({ typegames });
   } catch (err) {
-    next(err)
+    next(err);
   }
-
-}
-
+};
 
 exports.getGameByPoint = async (req, res, next) => {
   try {
     const get = await db.point.findMany({
-      include:{
-        game:true,
-      }
+      include: {
+        game: true,
+      },
     });
     res.json({ get });
   } catch (err) {
@@ -203,9 +192,9 @@ exports.getGameByPoint = async (req, res, next) => {
 exports.getGamePoints = async (req, res, next) => {
   try {
     const get = await db.games.findMany({
-      include:{
-        Point:true,
-      }
+      include: {
+        Point: true,
+      },
     });
     res.json({ get });
   } catch (err) {
@@ -213,11 +202,9 @@ exports.getGamePoints = async (req, res, next) => {
   }
 };
 
-
 exports.getOrder = async (req, res, next) => {
   try {
     const getOrder = await db.order.findMany({
-     
       include: {
         Payment: true,
       },
@@ -229,7 +216,6 @@ exports.getOrder = async (req, res, next) => {
   }
 };
 
-
 exports.updateStatus = async (req, res, next) => {
   const id = req.params.id;
   const newStatus = req.body.status;
@@ -239,7 +225,7 @@ exports.updateStatus = async (req, res, next) => {
       data: { status: newStatus },
       where: { id: Int },
     });
-    res.json({ msg: 'Update ok', result: rs }); // ส่ง response กลับให้ frontend
+    res.json({ msg: "Update ok", result: rs }); // ส่ง response กลับให้ frontend
   } catch (err) {
     next(err);
   }
@@ -255,52 +241,46 @@ exports.updateGamePoint = async (req, res, next) => {
 
     // Ensure conversions are successful and valid numbers
     if (isNaN(pointNumber) || isNaN(priceNumber)) {
-      return res.status(400).json({ msg: 'Invalid point or price values' });
+      return res.status(400).json({ msg: "Invalid point or price values" });
     }
 
     const rs = await db.point.update({
       data: {
         point: pointNumber,
-        price: priceNumber
+        price: priceNumber,
       },
       where: {
-        id: Int
-      }
+        id: Int,
+      },
     });
-    res.json({ msg: 'Update successful', result: rs }); // Send response back to frontend
+    res.json({ msg: "Update successful", result: rs }); // Send response back to frontend
   } catch (err) {
     next(err);
   }
 };
 
 exports.deleteGamePoint = async (req, res, next) => {
-  const pointId = req.params.pointId; 
+  const pointId = req.params.pointId;
   try {
-    const Int = +pointId; 
+    const Int = +pointId;
     await db.point.delete({
       where: { id: Int },
     });
-    res.json({ msg: 'Point deleted successfully' });
+    res.json({ msg: "Point deleted successfully" });
   } catch (err) {
     next(err);
   }
 };
 
-
-
-
-
-
 exports.deleteGame = async (req, res, next) => {
-  const { id } = req.params
+  const { id } = req.params;
   try {
-    const rs = await db.games.delete({ where: { id: +id } })
-    res.json({ msg: 'Delete Ok', result: rs })
+    const rs = await db.games.delete({ where: { id: +id } });
+    res.json({ msg: "Delete Ok", result: rs });
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
-
+};
 
 exports.deleteOrder = async (req, res, next) => {
   const paymentId = req.params.paymentId;
@@ -311,12 +291,11 @@ exports.deleteOrder = async (req, res, next) => {
       where: { id: id },
     });
 
-    res.json({ msg: 'delete successful', result: rs });
+    res.json({ msg: "delete successful", result: rs });
   } catch (err) {
     next(err);
   }
 };
-
 
 exports.updateRole = async (req, res, next) => {
   const id = req.params.id;
@@ -327,17 +306,17 @@ exports.updateRole = async (req, res, next) => {
       data: { role: newRole },
       where: { id: Int },
     });
-    res.json({ msg: 'Update ok', result: rs }); // ส่ง response กลับให้ frontend
+    res.json({ msg: "Update ok", result: rs }); // ส่ง response กลับให้ frontend
   } catch (err) {
     next(err);
   }
 };
 
-const path = require('path');
-const fs = require('fs');
-const { PrismaClient } = require('@prisma/client');
+const path = require("path");
+const fs = require("fs");
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const { createInvoice } = require('./invoiceGenerator');
+const { createInvoice } = require("./invoiceGenerator");
 
 exports.generateReceipt = async (req, res, next) => {
   const orderId = parseInt(req.params.orderId); // แปลง orderId เป็นจำนวนเต็ม
@@ -350,43 +329,44 @@ exports.generateReceipt = async (req, res, next) => {
         user: true, // ข้อมูลผู้ใช้
         games: true, // ข้อมูลเกม
         point: true, // ข้อมูลพ้อย (ถ้าต้องการข้อมูลจากตารางนี้)
-        Payment: true // ข้อมูลการชำระเงิน
+        Payment: true, // ข้อมูลการชำระเงิน
       },
     });
 
     if (!order) {
-      return res.status(404).json({ msg: 'Order not found' });
+      return res.status(404).json({ msg: "Order not found" });
     }
 
     // สร้างข้อมูลใบเสร็จจากข้อมูลคำสั่งซื้อ
     const invoiceData = {
       customerName: order.user.username, // ใช้ชื่อผู้ใช้จากคำสั่งซื้อ
-      customerEmail: order.email,   // ใช้อีเมลของผู้ใช้จากคำสั่งซื้อ
+      customerEmail: order.email, // ใช้อีเมลของผู้ใช้จากคำสั่งซื้อ
       orderId: order.id,
       orderDate: new Date().toLocaleString(),
       game: [
         {
-          name: order.games.game_name,  // ใช้ชื่อเกมจากตาราง games
-          quantity: 1, 
-          point: `${order.point ? order.point.point : ''} ` ,
-          price: `${order.point ? order.point.price : '฿'} `,
-        }
+          name: order.games.game_name, // ใช้ชื่อเกมจากตาราง games
+          quantity: 1,
+          point: `${order.point ? order.point.point : ""} `,
+          price: `${order.point ? order.point.price : "฿"} `,
+        },
       ],
-      total: ` ${order.point ? order.point.price : '฿'}` , // คำนวณรวมราคา (ตรวจสอบว่ามีข้อมูลหรือไม่)
+      total: ` ${order.point ? order.point.price : "฿"}`, // คำนวณรวมราคา (ตรวจสอบว่ามีข้อมูลหรือไม่)
     };
 
-    const filePath = path.join(__dirname, 'invoices', `invoice_${orderId}.pdf`);
-    if (!fs.existsSync(path.join(__dirname, 'invoices'))) {
-      fs.mkdirSync(path.join(__dirname, 'invoices'));
+    const filePath = path.join(__dirname, "invoices", `invoice_${orderId}.pdf`);
+    if (!fs.existsSync(path.join(__dirname, "invoices"))) {
+      fs.mkdirSync(path.join(__dirname, "invoices"));
     }
     createInvoice(invoiceData, filePath);
 
-    res.json({ msg: 'Invoice generated', filePath: `http://localhost:8889/invoices/invoice_${orderId}.pdf `});
+    res.json({
+      msg: "Invoice generated",
+      filePath: `http://localhost:8889/invoices/invoice_${orderId}.pdf `,
+    });
   } catch (error) {
     next(error);
   } finally {
     await prisma.$disconnect(); // ปิดการเชื่อมต่อกับฐานข้อมูล
   }
 };
-
-
