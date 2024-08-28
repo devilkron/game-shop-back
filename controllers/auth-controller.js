@@ -161,7 +161,7 @@ exports.order = async (req, res, next) => {
         }
       }
     });
-
+    
     res.json({ msg: "Order successfully created", order });
   } catch (error) {
     console.error(error);

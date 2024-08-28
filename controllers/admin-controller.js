@@ -323,7 +323,7 @@ exports.generateReceipt = async (req, res, next) => {
 
   try {
     // ดึงข้อมูลคำสั่งซื้อจากฐานข้อมูลพร้อมกับข้อมูลที่เกี่ยวข้อง
-    const order = await prisma.order.findUnique({
+    const order = await prisma.order.findFirst({
       where: { id: orderId },
       include: {
         user: true, // ข้อมูลผู้ใช้
@@ -353,12 +353,18 @@ exports.generateReceipt = async (req, res, next) => {
       ],
       total: ` ${order.point ? order.point.price : "฿"}`, // คำนวณรวมราคา (ตรวจสอบว่ามีข้อมูลหรือไม่)
     };
-
+    const invoiceDir = path.join(__dirname, "invoices")
     const filePath = path.join(__dirname, "invoices", `invoice_${orderId}.pdf`);
-    if (!fs.existsSync(path.join(__dirname, "invoices"))) {
-      fs.mkdirSync(path.join(__dirname, "invoices"));
+    if (!fs.existsSync(invoiceDir)) {
+      fs.mkdirSync(invoiceDir);
     }
     createInvoice(invoiceData, filePath);
+
+    // const filePath = path.join(__dirname, "invoices", invoice_${orderId}.pdf);
+    // if (!fs.existsSync(path.join(__dirname, "invoices"))) {
+    //   fs.mkdirSync(path.join(__dirname, "invoices"));
+    // }
+    // createInvoice(invoiceData, filePath);
 
     res.json({
       msg: "Invoice generated",

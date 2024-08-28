@@ -7,6 +7,7 @@ const errorMiddleware = require('./middlewares/error');
 const authRoute = require('./routes/auth-route');
 const todoRoute = require('./routes/todo-route');
 const adminRoute = require('./routes/admin-route');
+const { createInvoice } = require('./controllers/invoiceGenerator');
 
 const app = express();
 
@@ -18,6 +19,8 @@ app.use('/auth', authRoute);
 app.use('/todos', todoRoute);
 app.use('/admin', adminRoute);
 
+app.use('/invoices', express.static(path.join(__dirname, './controllers/invoices/')));
+
 // notFound
 app.use(notFound);
 
@@ -25,7 +28,6 @@ app.use(notFound);
 app.use(errorMiddleware);
 
 // เสิร์ฟไฟล์ในโฟลเดอร์ invoices
-app.use('/invoices/', express.static(path.join(__dirname, 'invoices')));
 
 let port = process.env.PORT || 8000;
 app.listen(port, () => console.log('Server on Port :', port));
